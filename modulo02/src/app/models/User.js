@@ -6,6 +6,9 @@ class User extends Model {
     /*
      * Aqui no método init, nós declaramos os parametros do model
      * que podem ser cadastrados pelo nosso app.
+     * O campo VIRTUAL, é um campo que nunca será salvo no banco de dados
+     * ele serve apenas para pegar e/ou retornar uma informação para o usuário
+     * final.
      */
     super.init(
       {
