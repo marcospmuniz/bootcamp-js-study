@@ -10,8 +10,7 @@ class UserController {
 
   async store(req, res) {
     const schema = Yup.object().shape({
-      name: Yup.string()
-        .required(),
+      name: Yup.string().required(),
       email: Yup.string()
         .email()
         .required(),
@@ -29,7 +28,7 @@ class UserController {
 
     if (userExists) {
       // retorna um bad request
-      return res.status(400).json({ error: 'User aready exists.' });
+      return res.status(400).json({ error: 'User already exists.' });
     }
 
     const {
@@ -52,8 +51,7 @@ class UserController {
       password: Yup.string()
         .min(6)
         .when('oldPassword', (oldPassword, field) => (oldPassword ? field.required() : field)),
-      confirmPassword: Yup.string()
-        .when('password', (password, field) => (password ? field.required().oneOf([Yup.ref('password')]) : field)),
+      confirmPassword: Yup.string().when('password', (password, field) => (password ? field.required().oneOf([Yup.ref('password')]) : field)),
     });
 
     if (!(await schema.isValid(req.body))) {
