@@ -13,6 +13,8 @@ class Main extends Component {
     newRepo: '',
     repositories: [],
     loading: false,
+    validRepo: true,
+    errorMessage: '',
   };
 
   // carregar os dados do LocalStorage
@@ -31,6 +33,7 @@ class Main extends Component {
 
     if (prevState.repositories !== repositories) {
       localStorage.setItem('repositories', JSON.stringify(repositories));
+      // localStorage.clear();
     }
   }
 
@@ -41,25 +44,51 @@ class Main extends Component {
   handleSubmit = async e => {
     e.preventDefault();
 
-    this.setState({ loading: true });
+    this.setState({
+      loading: true,
+      validRepo: true,
+      errorMessage: '',
+    });
 
     const { newRepo, repositories } = this.state;
 
-    const response = await api.get(`/repos/${newRepo}`);
+    try {
+      const duplicado = repositories.filter(
+        repositorie => repositorie === newRepo
+      );
 
-    const data = {
-      name: response.data.full_name,
-    };
+      if (duplicado) {
+        throw new Error('Repositório duplicado');
+      }
 
-    this.setState({
-      repositories: [...repositories, data],
-      newRepo: '',
-      loading: false,
-    });
+      const response = await api.get(`/repos/${newRepo}`);
+      const data = {
+        name: response.data.full_name,
+      };
+
+      this.setState({
+        repositories: [...repositories, data],
+        newRepo: '',
+        loading: false,
+        errorMessage: '',
+      });
+    } catch (error) {
+      this.setState({
+        loading: false,
+        validRepo: false,
+        errorMessage: error.message,
+      });
+    }
   };
 
   render() {
-    const { newRepo, loading, repositories } = this.state;
+    const {
+      newRepo,
+      loading,
+      repositories,
+      validRepo,
+      errorMessage,
+    } = this.state;
 
     return (
       <Container>
@@ -68,13 +97,16 @@ class Main extends Component {
           Repositórios
         </h1>
 
-        <Form onSubmit={this.handleSubmit}>
+        <Form onSubmit={this.handleSubmit} validRepo={validRepo}>
           <input
             type="text"
             placeholder="Adicionar repositório"
             value={newRepo}
             onChange={this.handleInputChange}
           />
+          <span className={validRepo ? `invisible` : `helpBlock`}>
+            {errorMessage}
+          </span>
 
           <SubmitButton loading={loading}>
             {loading ? (

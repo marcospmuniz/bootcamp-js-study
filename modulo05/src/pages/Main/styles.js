@@ -11,8 +11,27 @@ export const Form = styled.form`
     padding: 10px 15px;
     border-radius: 4px;
     font-size: 16px;
+
+    ${props =>
+      !props.validRepo &&
+      css`
+        border 1px solid #f00;
+      `}
+  }
+
+  span.helpBlock {
+    color: #f00;
+    font-size: 12px;
+    font-weight: bold;
+    display: inline;
+  }
+
+  span.invisible {
+    display: none;
   }
 `;
+
+export const HelpBlock = styled.div``;
 
 const rotate = keyframes`
   from {
