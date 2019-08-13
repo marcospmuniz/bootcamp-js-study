@@ -3,31 +3,31 @@ import styled, { keyframes, css } from 'styled-components';
 export const Form = styled.form`
   margin-top: 30px;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+
+  .form-group {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+  }
 
   input {
     flex: 1;
-    border: 1px solid #eee;
+    border: 1px solid ${props => (props.error ? '#ff6b6b' : '#eee')};
     padding: 10px 15px;
     border-radius: 4px;
     font-size: 16px;
 
-    ${props =>
-      !props.validRepo &&
-      css`
-        border 1px solid #f00;
-      `}
+    transition: border 0.25s ease-out;
   }
 
-  span.helpBlock {
-    color: #f00;
-    font-size: 12px;
+  div.helpBlock {
+    flex: 1;
+    color: #ff6b6b;
+    font-size: 13px;
     font-weight: bold;
-    display: inline;
-  }
-
-  span.invisible {
-    display: none;
+    display: ${props => (props.error ? 'inline' : 'none')};
+    padding: 10px 15px 0;
   }
 `;
 

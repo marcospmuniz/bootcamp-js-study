@@ -13,7 +13,7 @@ class Main extends Component {
     newRepo: '',
     repositories: [],
     loading: false,
-    validRepo: true,
+    error: null,
     errorMessage: '',
   };
 
@@ -46,16 +46,17 @@ class Main extends Component {
 
     this.setState({
       loading: true,
-      validRepo: true,
+      error: null,
       errorMessage: '',
     });
 
     const { newRepo, repositories } = this.state;
 
     try {
-      const duplicado = repositories.filter(
-        repositorie => repositorie === newRepo
-      );
+      if (newRepo === '')
+        throw new Error('Você precisa indicar um repositório');
+
+      const duplicado = repositories.find(r => r.name === newRepo);
 
       if (duplicado) {
         throw new Error('Repositório duplicado');
@@ -69,26 +70,19 @@ class Main extends Component {
       this.setState({
         repositories: [...repositories, data],
         newRepo: '',
-        loading: false,
-        errorMessage: '',
       });
     } catch (error) {
       this.setState({
-        loading: false,
-        validRepo: false,
+        error: true,
         errorMessage: error.message,
       });
+    } finally {
+      this.setState({ loading: false });
     }
   };
 
   render() {
-    const {
-      newRepo,
-      loading,
-      repositories,
-      validRepo,
-      errorMessage,
-    } = this.state;
+    const { newRepo, loading, repositories, error, errorMessage } = this.state;
 
     return (
       <Container>
@@ -97,24 +91,25 @@ class Main extends Component {
           Repositórios
         </h1>
 
-        <Form onSubmit={this.handleSubmit} validRepo={validRepo}>
-          <input
-            type="text"
-            placeholder="Adicionar repositório"
-            value={newRepo}
-            onChange={this.handleInputChange}
-          />
-          <span className={validRepo ? `invisible` : `helpBlock`}>
+        <Form onSubmit={this.handleSubmit} error={error}>
+          <div className="form-group">
+            <input
+              type="text"
+              placeholder="Adicionar repositório"
+              value={newRepo}
+              onChange={this.handleInputChange}
+            />
+            <SubmitButton loading={loading}>
+              {loading ? (
+                <FaSpinner color="#fff" size={14} />
+              ) : (
+                <FaPlus color="#fff" size={14} />
+              )}
+            </SubmitButton>
+          </div>
+          <div className={error ? 'helpBlock' : 'invisible'}>
             {errorMessage}
-          </span>
-
-          <SubmitButton loading={loading}>
-            {loading ? (
-              <FaSpinner color="#fff" size={14} />
-            ) : (
-              <FaPlus color="#fff" size={14} />
-            )}
-          </SubmitButton>
+          </div>
         </Form>
 
         <List>
